@@ -11,6 +11,7 @@ BASE_DIR="/home/mgoerens/dev"
 CREATE_REPO=false
 CLONE_REPO=false
 INSTALL_HELM=false
+TKN_VERSION="latest"
 HELM_VERSION=$(curl -s https://api.github.com/repos/helm/helm/releases/latest  | jq .name | tr -d \" | cut -d " " -f 2)
 INSTALL_OPERATOR_SDK=false
 OPERATOR_SDK_VERSION=$(curl -s https://api.github.com/repos/operator-framework/operator-sdk/releases/latest | jq .name | tr -d \")
@@ -39,6 +40,8 @@ while [ "$#" -gt 0 ]; do
 
     --create_repo) CREATE_REPO=true; shift 1;;
     --clone_repo) CLONE_REPO=true; shift 1;;
+    --install_tkn) INSTALL_TKN=true; shift 1;;
+    --install_tkn=*) INSTALL_TKN=true; TKN_VERSION="${1#*=}"; shift 1;;
     --install_helm) INSTALL_HELM=true; shift 1;;
     --install_helm=*) INSTALL_HELM=true; HELM_VERSION="${1#*=}"; shift 1;;
     --install_operator_sdk) INSTALL_OPERATOR_SDK=true; shift 1;;
@@ -170,6 +173,18 @@ if [ "$INSTALL_HELM" = "true" ]; then
 
   # Configure direnv
   # TODO: check Helm cache path
+fi
+
+if [ "$INSTALL_TKN" = "true" ]; then
+  echo "----Install tkn"
+
+  # Download binary
+  wget https://mirror.openshift.com/pub/openshift-v4/clients/pipelines/"$TKN_VERSION"/tkn-linux-amd64.tar.gz
+  tar -zxvf tkn-linux-amd64.tar.gz --exclude=LICENSE -C .bin/
+  tkn version
+
+  # Cleanup
+  rm tkn-linux-amd64.tar.gz
 fi
 
 # Adapted procedure from: https://sdk.operatorframework.io/docs/installation/
