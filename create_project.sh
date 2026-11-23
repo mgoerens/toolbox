@@ -135,6 +135,9 @@ if [ "$EXISTING" = "false" ]; then
         # This only adds the new remote. The repo will actually be created at the first push
         # TODO: is there a gitlab cli ?
         git remote add origin git@gitlab.com:"$REPO_ORG_NAME"/"$REPO_NAME".git;;
+      gitlab.cee.redhat.com)
+        # This only adds the new remote. The repo will actually be created at the first push
+	git remote add origin git@gitlab.cee.redhat.com:"$REPO_ORG_NAME"/"$REPO_NAME".git;;
     esac
   fi
 
